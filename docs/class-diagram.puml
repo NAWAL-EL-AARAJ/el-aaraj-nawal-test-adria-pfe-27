@@ -1,198 +1,196 @@
 @startuml class-diagram
-!pragma layout smetana
-title Diagramme de classes - Banque (account-service / transaction-service)
+title Diagramme de classes
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
-skinparam shadowing false
-left to right direction
+skinparam roundCorner 10
+skinparam nodesep 40
+skinparam ranksep 50
+skinparam ArrowColor #555555
+skinparam ArrowFontSize 11
+skinparam class {
+  BorderColor #555555
+  HeaderBackgroundColor #FFFFFF
+}
+skinparam class<<web>> {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
+skinparam class<<service>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam class<<repository>> {
+  BackgroundColor #FFF8E1
+  BorderColor #F9A825
+}
+skinparam class<<entity>> {
+  BackgroundColor #FFEBEE
+  BorderColor #C62828
+}
+skinparam class<<dto>> {
+  BackgroundColor #F5F5F5
+  BorderColor #9E9E9E
+}
+skinparam class<<feign>> {
+  BackgroundColor #F3E5F5
+  BorderColor #6A1B9A
+}
+skinparam class<<event>> {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+hide empty members
+hide circle
+hide stereotype
 
+' =====================================================
 package "account-service" {
-  package "domain" as ad {
-    enum AccountStatus {
-      ACTIVE
-      BLOCKED
-    }
-    class Account <<Entity>> {
-      - id : UUID
-      - customerReference : String
-      - status : AccountStatus
-      - currency : String
-      - balance : double
-    }
+
+  class AccountRestController <<web>>
+  class AccountGraphQLController <<web>>
+  class AccountMcpTools <<web>>
+
+  class AccountService <<service>> {
+    + create(AccountRequestDTO) : AccountResponseDTO
+    + findById(UUID) : AccountResponseDTO
+    + findAll() : List<AccountResponseDTO>
+    + block(UUID) / activate(UUID)
   }
-  package "dto" as adto {
-    class AccountRequestDTO <<record>> {
-      customerReference : String
-      currency : String
-      initialBalance : double
-    }
-    class AccountResponseDTO <<record>> {
-      id : UUID
-      customerReference : String
-      status : AccountStatus
-      currency : String
-      balance : double
-    }
+
+  class AccountRepository <<repository>>
+
+  class Account <<entity>> {
+    id : UUID
+    customerReference : String
+    status : AccountStatus
+    currency : String
+    balance : double
   }
-  package "repository" as arepo {
-    interface AccountRepository <<JpaRepository<Account, UUID>>> {
-      + findByCustomerReference(ref : String) : List<Account>
-      + findByStatus(status : AccountStatus) : List<Account>
-    }
+
+  enum AccountStatus <<entity>> {
+    ACTIVE
+    BLOCKED
   }
-  package "service" as aserv {
-    interface AccountService {
-      + create(req : AccountRequestDTO) : AccountResponseDTO
-      + findById(id : UUID) : AccountResponseDTO
-      + findAll() : List<AccountResponseDTO>
-      + block(id : UUID) : AccountResponseDTO
-      + activate(id : UUID) : AccountResponseDTO
-      + debit(id : UUID, amount : double) : AccountResponseDTO
-    }
-    class AccountServiceImpl
-    class AccountMapper {
-      + toDto(a : Account) : AccountResponseDTO
-      + toEntity(r : AccountRequestDTO) : Account
-    }
+
+  class AccountRequestDTO <<dto>> {
+    customerReference : String
+    currency : String
+    balance : double
   }
-  package "web" as aweb {
-    class AccountRestController <<RestController>> {
-      + /api/accounts
-    }
-    class AccountGraphQLController <<Controller>> {
-      + accounts() / accountById(id)
-      + createAccount(input)
-    }
+  class AccountResponseDTO <<dto>> {
+    id : UUID
+    customerReference : String
+    status : AccountStatus
+    currency : String
+    balance : double
   }
-  package "mcp" as amcp {
-    class AccountMcpTools <<@Tool>> {
-      + getAccount(id : UUID)
-      + listAccounts()
-      + blockAccount(id : UUID)
-    }
-  }
+
+  AccountRestController -down-> AccountService
+  AccountGraphQLController -down-> AccountService
+  AccountMcpTools -down-> AccountService
+  AccountService -down-> AccountRepository
+  AccountRepository -down-> Account
+  Account -right-> AccountStatus
+
+  AccountService .right.> AccountRequestDTO
+  AccountService .right.> AccountResponseDTO
+  AccountRequestDTO -[hidden]down- AccountResponseDTO
 }
 
+' =====================================================
 package "transaction-service" {
-  package "domain" as td {
-    class Transaction <<Entity>> {
-      - id : UUID
-      - accountId : UUID
-      - amount : BigDecimal
-      - currency : String
-      - merchantCategory : String
-      - country : String
-      - createdAt : Instant
-    }
+
+  class TransactionRestController <<web>>
+  class TransactionGraphQLController <<web>>
+  class TransactionMcpTools <<web>>
+
+  class TransactionService <<service>> {
+    + create(TransactionRequestDTO) : TransactionResponseDTO
+    + findById(UUID) : TransactionResponseDTO
+    + findByAccount(UUID) : List<TransactionResponseDTO>
   }
-  package "dto" as tdto {
-    class TransactionRequestDTO <<record>> {
-      accountId : UUID
-      amount : BigDecimal
-      currency : String
-      merchantCategory : String
-      country : String
-    }
-    class TransactionResponseDTO <<record>> {
-      id : UUID
-      accountId : UUID
-      amount : BigDecimal
-      currency : String
-      merchantCategory : String
-      country : String
-      createdAt : Instant
-    }
-    class AccountDTO <<record>> {
-      id : UUID
-      customerReference : String
-      status : String
-      currency : String
-      balance : double
-    }
+
+  class TransactionRepository <<repository>>
+
+  class Transaction <<entity>> {
+    id : UUID
+    accountId : UUID
+    amount : BigDecimal
+    currency : String
+    merchantCategory : String
+    country : String
+    createdAt : Instant
   }
-  package "events" as tevt {
-    class TransactionCreatedEvent <<record>> {
-      transactionId : UUID
-      accountId : UUID
-      amount : BigDecimal
-      currency : String
-      merchantCategory : String
-      country : String
-      createdAt : Instant
-    }
+
+  class AccountRestClient <<feign>> {
+    + getAccount(UUID) : AccountDTO
   }
-  package "repository" as trepo {
-    interface TransactionRepository <<JpaRepository<Transaction, UUID>>> {
-      + findByAccountId(accountId : UUID) : List<Transaction>
-    }
+
+  class TransactionCreatedEvent <<event>> {
+    transactionId : UUID
+    accountId : UUID
+    amount : BigDecimal
+    currency : String
+    merchantCategory : String
+    country : String
+    createdAt : Instant
   }
-  package "client" as tcli {
-    interface AccountRestClient <<FeignClient("account-service")>> {
-      + getAccount(id : UUID) : AccountDTO
-    }
+
+  class TransactionRequestDTO <<dto>> {
+    accountId : UUID
+    amount : BigDecimal
+    currency : String
+    merchantCategory : String
+    country : String
   }
-  package "service" as tserv {
-    interface TransactionService {
-      + create(req : TransactionRequestDTO) : TransactionResponseDTO
-      + findById(id : UUID) : TransactionResponseDTO
-      + findByAccount(accountId : UUID) : List<TransactionResponseDTO>
-    }
-    class TransactionServiceImpl {
-      - getAccountFallback(id, ex) : AccountDTO
-    }
-    class TransactionMapper
+  class TransactionResponseDTO <<dto>> {
+    id : UUID
+    accountId : UUID
+    amount : BigDecimal
+    currency : String
+    createdAt : Instant
   }
-  package "web" as tweb {
-    class TransactionRestController <<RestController>> {
-      + /api/transactions
-    }
-    class TransactionGraphQLController <<Controller>> {
-      + transactions() / transactionById(id)
-      + createTransaction(input)
-    }
+  class AccountDTO <<dto>> {
+    id : UUID
+    status : String
+    balance : double
   }
-  package "mcp" as tmcp {
-    class TransactionMcpTools <<@Tool>> {
-      + createTransaction(...)
-      + listTransactionsByAccount(accountId)
-    }
-  }
+
+  TransactionRestController -down-> TransactionService
+  TransactionGraphQLController -down-> TransactionService
+  TransactionMcpTools -down-> TransactionService
+  TransactionService -down-> TransactionRepository
+  TransactionRepository -down-> Transaction
+
+  TransactionService .right.> TransactionRequestDTO
+  TransactionService .right.> TransactionResponseDTO
+  TransactionRequestDTO -[hidden]down- TransactionResponseDTO
+
+  TransactionService -left-> AccountRestClient : Feign\n+ Resilience4J
+  AccountRestClient .down.> AccountDTO
+  TransactionService -down-> TransactionCreatedEvent : publie\n(Kafka)
 }
 
+' =====================================================
 package "notification-service" {
-  class TransactionEventListener <<KafkaListener>> {
-    + onTransactionCreated(e : TransactionCreatedEvent)
-  }
+  class TransactionEventListener <<service>>
 }
 
-' --- account-service ---
-Account "1" --> "1" AccountStatus : status
-AccountRepository ..> Account : gère
-AccountServiceImpl ..|> AccountService
-AccountServiceImpl --> AccountRepository
-AccountServiceImpl --> AccountMapper
-AccountMapper ..> AccountRequestDTO
-AccountMapper ..> AccountResponseDTO
-AccountRestController --> AccountService
-AccountGraphQLController --> AccountService
-AccountMcpTools --> AccountService
+TransactionEventListener .[norank].> TransactionCreatedEvent : consomme (Kafka)
+AccountRestClient .[norank].> AccountRestController : HTTP
 
-' --- transaction-service ---
-Transaction "*" ..> "1" AccountDTO : accountId
-TransactionRepository ..> Transaction : gère
-TransactionServiceImpl ..|> TransactionService
-TransactionServiceImpl --> TransactionRepository
-TransactionServiceImpl --> AccountRestClient : Feign + Resilience4J
-TransactionServiceImpl --> TransactionMapper
-TransactionServiceImpl ..> TransactionCreatedEvent : publie (Kafka)
-TransactionMapper ..> TransactionRequestDTO
-TransactionMapper ..> TransactionResponseDTO
-AccountRestClient ..> AccountDTO
-TransactionRestController --> TransactionService
-TransactionGraphQLController --> TransactionService
-TransactionMcpTools --> TransactionService
-
-' --- inter-services ---
-AccountRestClient ..> AccountRestController : HTTP via Eureka
-TransactionEventListener ..> TransactionCreatedEvent : consomme
+legend right
+  |= Couleur |= Couche |
+  |<#E3F2FD>| web (REST, GraphQL, MCP) |
+  |<#E8F5E9>| service |
+  |<#FFF8E1>| repository |
+  |<#FFEBEE>| domain |
+  |<#F5F5F5>| DTO |
+  |<#F3E5F5>| client Feign |
+  |<#FFF3E0>| événement Kafka |
+endlegend
 @enduml

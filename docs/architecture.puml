@@ -1,60 +1,94 @@
 @startuml architecture
-!pragma layout smetana
 title Architecture micro-services
+
 skinparam shadowing false
-skinparam componentStyle rectangle
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
 skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam packageStyle rectangle
+skinparam nodesep 60
+skinparam ranksep 70
+skinparam ArrowColor #555555
+skinparam ArrowFontSize 11
+skinparam ArrowFontColor #333333
 
-actor "Utilisateur" as user
-node "Client Angular" as angular
-node "Client REST / Bot Telegram" as telegram
+skinparam rectangle {
+  BorderColor #555555
+}
+skinparam rectangle<<client>> {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
+skinparam rectangle<<infra>> {
+  BackgroundColor #ECEFF1
+  BorderColor #455A64
+}
+skinparam rectangle<<metier>> {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+}
+skinparam rectangle<<ia>> {
+  BackgroundColor #F3E5F5
+  BorderColor #6A1B9A
+}
+skinparam queue {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+skinparam cloud {
+  BackgroundColor #F3E5F5
+  BorderColor #6A1B9A
+}
+hide stereotype
 
-rectangle "Infrastructure" {
-  component "gateway-service\n:8080\nSpring Cloud Gateway" as gateway
-  component "discovery-service\n:8761\nEureka Server" as eureka
-  component "config-service\n:8888\nConfig Server" as config
-  folder "config-repo" as repo
+' ===== Clients =====
+package "Clients" {
+  rectangle "**Client Angular**" <<client>> as angular
+  rectangle "**Client REST / Telegram**" <<client>> as telegram
 }
 
-rectangle "Services métier" {
-  component "account-service\n:8081\nREST | GraphQL | MCP\nJPA + H2" as account
-  component "transaction-service\n:8082\nREST | GraphQL | MCP\nJPA + H2" as transaction
-  component "notification-service\n:8083\nKafka consumer" as notification
+' ===== Point d'entrée =====
+rectangle "**gateway-service**\n:8080\nSpring Cloud Gateway" <<infra>> as gateway
+
+' ===== Services métier =====
+package "Services métier" {
+  rectangle "**account-service**\n:8081\nREST · GraphQL · MCP" <<metier>> as account
+  rectangle "**transaction-service**\n:8082\nREST · GraphQL · MCP" <<metier>> as transaction
 }
 
-queue "Kafka\ntopic: bank.transactions.created" as kafka
+' ===== Événements =====
+queue "**Kafka**\nbank.transactions.created" as kafka
+rectangle "**notification-service**\n:8083" <<metier>> as notification
 
-rectangle "IA" {
-  component "ai-agent-service\n:8084\nSpring AI + MCP Client" as agent
-  cloud "LLM\n(OpenAI)" as llm
+' ===== IA =====
+package "Intelligence artificielle" {
+  rectangle "**ai-agent-service**\n:8084\nSpring AI · MCP Client" <<ia>> as agent
+  cloud "**LLM**\nOpenAI" as llm
 }
 
-user --> angular
-user --> telegram
-angular --> gateway : HTTP
-telegram --> gateway : HTTP
-telegram --> agent : questions en langage naturel
+' ===== Infrastructure =====
+package "Infrastructure (utilisée par tous les services)" {
+  rectangle "**discovery-service**\n:8761\nEureka\n//annuaire des services//" <<infra>> as eureka
+  rectangle "**config-service**\n:8888\nConfig Server\n//configuration centralisée//" <<infra>> as config
+}
 
-gateway --> account : lb://account-service
-gateway --> transaction : lb://transaction-service
+' ----- flux principal (haut -> bas) -----
+angular -down-> gateway : HTTP
+telegram -down-> gateway : HTTP
+gateway -down-> account
+gateway -down-> transaction
+account <-right- transaction : Feign\n+ Resilience4J
+transaction -down-> kafka : publie
+kafka -right-> notification : consomme
 
-transaction --> account : OpenFeign + Resilience4J\n(circuit breaker)
-transaction --> kafka : publie TransactionCreatedEvent
-kafka --> notification : consomme
+' ----- IA (à droite) -----
+telegram -right-> agent : chat
+agent -right-> llm : prompt
+agent -down-> transaction : MCP
+agent -down-> account : MCP
 
-agent --> llm : prompt / tool calling
-agent --> account : MCP (outils)
-agent --> transaction : MCP (outils)
-
-config --> repo : lit
-gateway ..> eureka : enregistrement / découverte
-account ..> eureka
-transaction ..> eureka
-notification ..> eureka
-agent ..> eureka
-gateway ..> config : configuration
-account ..> config
-transaction ..> config
-notification ..> config
-agent ..> config
+' ----- placement -----
+eureka -[hidden]right- config
+kafka -[hidden]down- eureka
 @enduml

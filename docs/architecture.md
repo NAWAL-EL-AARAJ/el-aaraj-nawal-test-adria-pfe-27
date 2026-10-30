@@ -52,6 +52,8 @@ Les contrôleurs REST, GraphQL et MCP appellent tous la même couche `service`.
 
 ## Régénérer les images
 
+Nécessite [PlantUML](https://plantuml.com/download) et [Graphviz](https://graphviz.org/download/) :
+
 ```bash
 java -jar plantuml.jar -charset UTF-8 -tpng -o images docs/class-diagram.puml docs/architecture.puml
 ```
