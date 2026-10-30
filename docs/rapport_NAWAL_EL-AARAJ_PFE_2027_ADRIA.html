@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Rapport - Test ADRIA PFE 2027</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="rapport.css" />
+</head>
+<body>
+
+<div class="title-page">
+<p><strong>École Normale Supérieure de l’Enseignement Technique de
+Mohammedia (ENSET)</strong> Université Hassan II de Casablanca</p>
+<p>en partenariat avec <strong>ADRIA Business &amp;
+Technology</strong></p>
+<div class="big">
+Épreuve Technique de Sélection
+</div>
+<div class="sub">
+Architecture micro-services, IA et développement full-stack
+</div>
+<p>Test ADRIA PFE 2027 — Épreuve pratique (durée : 3h)</p>
+<p><strong>Réalisé par : Nawal EL AARAJ</strong></p>
+<p>Cycle ingénieur — S5</p>
+<p>Année scolaire : 2026/2027</p>
+<p>Date : 30 octobre 2026</p>
+<p>Repository :
+https://github.com/NAWAL-EL-AARAJ/el-aaraj-nawal-test-adria-pfe-27</p>
+</div>
+<div class="page-break">
+
+</div>
+<h2 id="sommaire">Sommaire</h2>
+<ol type="1">
+<li>Introduction</li>
+<li>Modules et ports</li>
+<li>Partie A — Préparation</li>
+<li>Partie B — Conception</li>
+<li>Partie C — Account-Service, Transaction-Service, OpenFeign et
+Resilience4J</li>
+<li>Partie D — Gateway, Eureka et Config Service</li>
+<li>Partie E — Agent IA</li>
+<li>Partie F — Kafka</li>
+<li>Partie G — Client web Angular</li>
+<li>Conclusion</li>
+</ol>
+<div class="page-break">
+
+</div>
+<h2 id="introduction">1. Introduction</h2>
+<p>Ce travail a été réalisé dans le cadre de l’épreuve technique de
+sélection ADRIA pour le PFE 2027, une épreuve pratique de 3 heures.</p>
+<p><strong>Besoin.</strong> Une banque souhaite une plateforme qui
+permette de :</p>
+<ul>
+<li>gérer des <strong>comptes bancaires</strong> (création,
+consultation, blocage et activation, solde, devise) ;</li>
+<li>enregistrer des <strong>transactions</strong> (paiements et
+virements) en respectant des règles métier ;</li>
+<li>diffuser des <strong>événements métier</strong> à chaque
+transaction, pour découpler les traitements en aval ;</li>
+<li>proposer un <strong>assistant conversationnel</strong>, sur le web
+et sur Telegram, capable d’agir sur les comptes en langage naturel.</li>
+</ul>
+<p><strong>Objectifs.</strong> Concevoir une architecture micro-services
+découplée, résiliente et configurable de façon centralisée, exposer la
+même logique métier en REST, GraphQL et MCP, et brancher dessus un agent
+IA et un client web.</p>
+<p><strong>Technologies.</strong> Java 21, Maven multi-modules, Spring
+Boot 4.1.2, Spring Cloud 2025.1.4 (Gateway, Eureka, Config, OpenFeign),
+Resilience4J, Spring AI 2.0.1 (LLM via Groq, client et serveurs MCP),
+Spring for GraphQL, Apache Kafka, Angular 22 avec Angular Material,
+Docker Compose (Kafka et Kafka UI).</p>
+<p><strong>Plan.</strong> Après le tableau des modules, chaque partie de
+l’épreuve (A à G) est présentée : ce qui a été fait, les choix
+techniques, un extrait de code ou de configuration, et les captures.</p>
+<h2 id="modules-et-ports">2. Modules et ports</h2>
+<p>Les ports sont ceux définis dans les
+<code>application.properties</code> des modules et dans
+<code>config-repo/</code>.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Module</th>
+<th>Port</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>discovery-service</td>
+<td>8761</td>
+<td>Annuaire Eureka</td>
+</tr>
+<tr>
+<td>config-service</td>
+<td>8888</td>
+<td>Spring Cloud Config Server (profil <code>native</code>, dossier
+<code>config-repo/</code>)</td>
+</tr>
+<tr>
+<td>gateway-service</td>
+<td>8080</td>
+<td>Point d’entrée unique (Spring Cloud Gateway), CORS pour
+<code>http://localhost:4200</code></td>
+</tr>
+<tr>
+<td>account-service</td>
+<td>8081</td>
+<td>Comptes : REST, GraphQL et MCP, base H2</td>
+</tr>
+<tr>
+<td>transaction-service</td>
+<td>8082</td>
+<td>Transactions : REST, GraphQL et MCP, Feign et Resilience4J,
+producteur Kafka</td>
+</tr>
+<tr>
+<td>notification-service</td>
+<td>8083</td>
+<td>Consommateur Kafka</td>
+</tr>
+<tr>
+<td>ai-agent-service</td>
+<td>8084</td>
+<td>Agent Spring AI (<code>/api/chat</code>) et bot Telegram</td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td>9092</td>
+<td>Broker (mode KRaft, <code>docker-compose-infra.yml</code>)</td>
+</tr>
+<tr>
+<td>Kafka UI</td>
+<td>8090</td>
+<td>Interface web de Kafka</td>
+</tr>
+<tr>
+<td>frontend (Angular)</td>
+<td>4200</td>
+<td>Client web (<code>ng serve</code>)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Remarque : au moment des captures, le port 8080 était déjà occupé sur
+le poste par un autre logiciel (Jenkins), et le port 4200 par un autre
+projet. La gateway a donc été lancée sur <strong>8086</strong> et le
+front sur <strong>4201</strong>, avec la même configuration. Les ports
+du projet restent 8080 et 4200.</p>
+</blockquote>
+<div class="page-break">
+
+</div>
+<h2 id="partie-a-préparation">3. Partie A — Préparation</h2>
+<p><strong>Ce qui a été fait.</strong></p>
+<ul>
+<li>Création du dépôt GitHub
+<code>el-aaraj-nawal-test-adria-pfe-27</code>.</li>
+<li>Mise en place d’un projet <strong>Maven multi-modules</strong> : un
+<code>pom.xml</code> parent (packaging <code>pom</code>) qui déclare les
+7 modules et centralise les versions par des BOM (Spring Cloud, Spring
+AI).</li>
+<li>Commits réguliers et courts, un par étape : création des modules,
+gateway, account service, transaction service, Feign et Resilience4J,
+Kafka, etc.</li>
+</ul>
+<p><strong>Extrait (pom.xml parent) :</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">parent</span>&gt;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">groupId</span>&gt;org.springframework.boot&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">artifactId</span>&gt;spring-boot-starter-parent&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">version</span>&gt;4.1.2&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">parent</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">properties</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">java.version</span>&gt;21&lt;/<span class="kw">java.version</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">spring-ai.version</span>&gt;2.0.1&lt;/<span class="kw">spring-ai.version</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">spring-cloud.version</span>&gt;2025.1.4&lt;/<span class="kw">spring-cloud.version</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">properties</span>&gt;</span></code></pre></div>
+<p><strong>Choix technique.</strong> Les versions de Spring Boot, Spring
+Cloud et Spring AI ont été choisies compatibles entre elles et gérées
+une seule fois dans le parent. Les modules n’indiquent donc aucune
+version.</p>
+<h2 id="partie-b-conception">4. Partie B — Conception</h2>
+<figure>
+<img src="../captures/b1-diagramme-classes.png"
+alt="Diagramme de classes" />
+<figcaption aria-hidden="true">Diagramme de classes</figcaption>
+</figure>
+<p><em>Figure B1 — Diagramme de classes.</em> Un <code>Account</code>
+(identifiant UUID, référence client, statut <code>ACTIVE</code> ou
+<code>BLOCKED</code>, devise, solde) possède des
+<code>Transaction</code> (montant, devise, catégorie marchand, pays,
+type <code>DEBIT</code>, <code>CREDIT</code> ou <code>TRANSFER</code>).
+Comme les deux entités sont dans des services différents, le lien se
+fait par <code>accountId</code> et non par une clé étrangère.</p>
+<figure>
+<img src="../captures/b2-architecture.png" alt="Architecture" />
+<figcaption aria-hidden="true">Architecture</figcaption>
+</figure>
+<p><em>Figure B2 — Architecture micro-services.</em> Les clients
+(Angular, REST, Telegram) passent par la gateway. Les services
+s’enregistrent dans Eureka et lisent leur configuration dans
+config-service. transaction-service appelle account-service via
+OpenFeign et publie dans Kafka. L’agent IA appelle les outils MCP des
+services métier.</p>
+<div class="page-break">
+
+</div>
+<h2
+id="partie-c-account-service-transaction-service-openfeign-et-resilience4j">5.
+Partie C — Account-Service, Transaction-Service, OpenFeign et
+Resilience4J</h2>
+<p><strong>Organisation en couches.</strong> Chaque service métier suit
+la même structure :</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>domain/</code></td>
+<td>entités JPA et enums</td>
+</tr>
+<tr>
+<td><code>repository/</code></td>
+<td>interfaces Spring Data JPA</td>
+</tr>
+<tr>
+<td><code>service/</code></td>
+<td>logique métier, DTO, mappers, exceptions</td>
+</tr>
+<tr>
+<td><code>web/rest/</code></td>
+<td>contrôleurs REST et gestion globale des erreurs</td>
+</tr>
+<tr>
+<td><code>web/graphql/</code></td>
+<td>contrôleurs GraphQL</td>
+</tr>
+<tr>
+<td><code>mcp/</code></td>
+<td>outils MCP (<code>@Tool</code>) pour l’agent IA</td>
+</tr>
+</tbody>
+</table>
+<p>Les contrôleurs REST, GraphQL et MCP appellent <strong>la même couche
+service</strong>. Une règle métier n’est donc écrite qu’une seule
+fois.</p>
+<p><strong>Règles métier (transaction-service) :</strong></p>
+<ul>
+<li>montant strictement positif ;</li>
+<li>montant au plus égal à <code>bank.transaction.max-amount</code>
+(1000, lu depuis config-service) ;</li>
+<li>compte existant et <code>ACTIVE</code> ;</li>
+<li>devise de la transaction identique à celle du compte ;</li>
+<li>solde suffisant ;</li>
+<li>virement uniquement entre deux comptes de même devise.</li>
+</ul>
+<p>Une violation renvoie <code>422</code> avec un message explicite, un
+compte introuvable renvoie <code>404</code> et des données invalides
+renvoient <code>400</code>.</p>
+<p><strong>OpenFeign et Resilience4J.</strong> transaction-service lit
+et débite le compte via un client Feign
+(<code>lb://account-service</code>), protégé par un circuit breaker et
+un retry :</p>
+<pre class="properties"><code>resilience4j.circuitbreaker.instances.accountService.sliding-window-size=10
+resilience4j.circuitbreaker.instances.accountService.minimum-number-of-calls=5
+resilience4j.circuitbreaker.instances.accountService.failure-rate-threshold=50
+resilience4j.circuitbreaker.instances.accountService.wait-duration-in-open-state=10s
+resilience4j.retry.instances.accountService.max-attempts=3</code></pre>
+<p>Les erreurs métier (compte introuvable, opération refusée) sont
+<strong>ignorées</strong> par le circuit breaker : seule une vraie
+indisponibilité ouvre le circuit. Le fallback renvoie
+<code>503 - Service compte indisponible, réessayez plus tard</code>.</p>
+<p><strong>MCP.</strong> Les services exposent leurs outils MCP en
+<code>STREAMABLE</code> HTTP sur <code>/mcp</code>, par exemple :</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Tool</span><span class="op">(</span>description <span class="op">=</span> <span class="st">&quot;Retourne le solde et la devise d&#39;un compte bancaire&quot;</span><span class="op">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="bu">String</span> <span class="fu">getBalance</span><span class="op">(</span><span class="at">@ToolParam</span><span class="op">(</span>description <span class="op">=</span> <span class="st">&quot;Identifiant UUID du compte&quot;</span><span class="op">)</span> <span class="bu">String</span> accountId<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    AccountResponseDTO account <span class="op">=</span> accountService<span class="op">.</span><span class="fu">findById</span><span class="op">(</span><span class="bu">UUID</span><span class="op">.</span><span class="fu">fromString</span><span class="op">(</span>accountId<span class="op">));</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">String</span><span class="op">.</span><span class="fu">format</span><span class="op">(</span><span class="bu">Locale</span><span class="op">.</span><span class="fu">ROOT</span><span class="op">,</span> <span class="st">&quot;</span><span class="sc">%.2f</span><span class="st"> </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> account<span class="op">.</span><span class="fu">balance</span><span class="op">(),</span> account<span class="op">.</span><span class="fu">currency</span><span class="op">());</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<figure>
+<img src="../captures/c1-get-comptes.png" alt="GET comptes" />
+<figcaption aria-hidden="true">GET comptes</figcaption>
+</figure>
+<p><em>Figure C1 — Liste des comptes via la gateway.</em> Les 3 comptes
+créés au démarrage : un compte EUR actif, un compte MAD actif et un
+compte EUR bloqué. La gateway route <code>/api/accounts/**</code> vers
+<code>lb://ACCOUNT-SERVICE</code>.</p>
+<figure>
+<img src="../captures/c2-transaction-ok.png" alt="Transaction OK" />
+<figcaption aria-hidden="true">Transaction OK</figcaption>
+</figure>
+<p><em>Figure C2 — Transaction valide.</em> Réponse <code>201</code>
+avec une transaction <code>DEBIT</code>. Le solde du compte est débité
+dans account-service via Feign.</p>
+<figure>
+<img src="../captures/c3-erreur-montant.png" alt="Erreur montant" />
+<figcaption aria-hidden="true">Erreur montant</figcaption>
+</figure>
+<p><em>Figure C3 — Montant supérieur au maximum.</em> Un paiement de
+1500 est refusé en <code>422</code>, car la limite de 1000 vient de la
+configuration centralisée.</p>
+<figure>
+<img src="../captures/c4-virement.png" alt="Virement" />
+<figcaption aria-hidden="true">Virement</figcaption>
+</figure>
+<p><em>Figure C4 — Virement entre deux comptes EUR.</em> Deux
+transactions <code>TRANSFER</code> sont créées : un débit sur le compte
+source et un crédit sur le compte destination.</p>
+<figure>
+<img src="../captures/c6-graphiql.png" alt="GraphiQL" />
+<figcaption aria-hidden="true">GraphiQL</figcaption>
+</figure>
+<p><em>Figure C6 — GraphiQL d’account-service.</em> La même couche
+service est exposée en GraphQL (<code>/graphql</code>, et
+<code>/graphql/accounts</code> via la gateway).</p>
+<p>Le scénario de fallback Resilience4J (account-service arrêté, puis
+circuit <code>OPEN</code>) est décrit pas à pas dans
+<code>docs/tests.md</code>, section 10. Faute de temps, il n’a pas été
+capturé.</p>
+<div class="page-break">
+
+</div>
+<h2 id="partie-d-gateway-eureka-et-config-service">6. Partie D —
+Gateway, Eureka et Config Service</h2>
+<ul>
+<li><strong>Eureka (8761)</strong> : chaque service s’enregistre, et la
+gateway et Feign résolvent les adresses par nom
+(<code>lb://...</code>).</li>
+<li><strong>Config Service (8888)</strong> : profil <code>native</code>,
+il lit le dossier <code>config-repo/</code>. Le maximum autorisé y est
+défini dans <code>application.properties</code> :</li>
+</ul>
+<pre class="properties"><code>bank.transaction.max-amount=1000</code></pre>
+<p>La valeur peut être rechargée à chaud avec
+<code>POST /actuator/refresh</code> sur transaction-service.</p>
+<ul>
+<li><strong>Gateway (8080)</strong> : routes explicites
+<code>/api/accounts/**</code>, <code>/api/transactions/**</code>,
+<code>/api/chat/**</code>, <code>/graphql/accounts</code> et
+<code>/graphql/transactions</code>, plus un CORS global pour le client
+Angular.</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span><span class="fu">route</span><span class="op">(</span><span class="st">&quot;account-service&quot;</span><span class="op">,</span> r <span class="op">-&gt;</span> r<span class="op">.</span><span class="fu">path</span><span class="op">(</span><span class="st">&quot;/api/accounts/**&quot;</span><span class="op">).</span><span class="fu">uri</span><span class="op">(</span><span class="st">&quot;lb://ACCOUNT-SERVICE&quot;</span><span class="op">))</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span><span class="fu">route</span><span class="op">(</span><span class="st">&quot;transaction-service&quot;</span><span class="op">,</span> r <span class="op">-&gt;</span> r<span class="op">.</span><span class="fu">path</span><span class="op">(</span><span class="st">&quot;/api/transactions/**&quot;</span><span class="op">).</span><span class="fu">uri</span><span class="op">(</span><span class="st">&quot;lb://TRANSACTION-SERVICE&quot;</span><span class="op">))</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span><span class="fu">route</span><span class="op">(</span><span class="st">&quot;ai-agent-service&quot;</span><span class="op">,</span> r <span class="op">-&gt;</span> r<span class="op">.</span><span class="fu">path</span><span class="op">(</span><span class="st">&quot;/api/chat/**&quot;</span><span class="op">).</span><span class="fu">uri</span><span class="op">(</span><span class="st">&quot;lb://AI-AGENT-SERVICE&quot;</span><span class="op">))</span></span></code></pre></div>
+<figure>
+<img src="../captures/d1-eureka.png" alt="Eureka" />
+<figcaption aria-hidden="true">Eureka</figcaption>
+</figure>
+<p><em>Figure D1 — Tableau de bord Eureka.</em> Les services enregistrés
+auprès de l’annuaire.</p>
+<figure>
+<img src="../captures/d2-config-service.png" alt="Config service" />
+<figcaption aria-hidden="true">Config service</figcaption>
+</figure>
+<p><em>Figure D2 — Configuration servie à transaction-service.</em>
+<code>bank.transaction.max-amount=1000</code> vient de
+<code>config-repo/application.properties</code>, avec les réglages
+Feign, Resilience4J et Kafka de
+<code>config-repo/transaction-service.properties</code>.</p>
+<div class="page-break">
+
+</div>
+<h2 id="partie-e-agent-ia">7. Partie E — Agent IA</h2>
+<p><strong>Ce qui a été fait.</strong> <code>ai-agent-service</code>
+(8084) est un agent <strong>Spring AI</strong> :</p>
+<ul>
+<li><strong>LLM</strong> : API compatible OpenAI fournie par
+<strong>Groq</strong> (clé lue dans la variable
+<code>GROQ_API_KEY</code>, modèle modifiable par <code>LLM_MODEL</code>)
+;</li>
+<li><strong>client MCP</strong> : il se connecte aux serveurs MCP
+d’account-service (8081) et de transaction-service (8082), et les outils
+(lister les comptes, solde, créer ou bloquer un compte, paiement,
+historique, virement) sont donnés au LLM, qui décide lui-même lesquels
+appeler ;</li>
+<li><strong>mémoire de conversation</strong> :
+<code>MessageChatMemoryAdvisor</code>, isolée par
+<code>conversationId</code> ;</li>
+<li><strong>API REST</strong> : <code>POST /api/chat</code> avec
+<code>{conversationId, message}</code> renvoie
+<code>{conversationId, answer}</code>, et une erreur du LLM ou d’un
+service renvoie un <code>503</code> clair ;</li>
+<li><strong>bot Telegram</strong> : long polling
+(<code>getUpdates</code>, sans webhook, donc il fonctionne en local),
+activé seulement si <code>TELEGRAM_BOT_TOKEN</code> est défini. Chaque
+message passe par le même <code>AgentService</code> que
+<code>/api/chat</code>, avec le chatId Telegram comme conversationId.
+<code>/start</code> affiche un message d’accueil, une erreur déclenche
+un message clair, et les réponses de plus de 4000 caractères sont
+découpées en plusieurs messages.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Bean</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> ChatClient <span class="fu">chatClient</span><span class="op">(</span>ChatClient<span class="op">.</span><span class="fu">Builder</span> builder<span class="op">,</span> ChatMemory chatMemory<span class="op">,</span> ToolCallbackProvider mcpTools<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> builder</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">defaultSystem</span><span class="op">(</span>SYSTEM_PROMPT<span class="op">)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">defaultAdvisors</span><span class="op">(</span>MessageChatMemoryAdvisor<span class="op">.</span><span class="fu">builder</span><span class="op">(</span>chatMemory<span class="op">).</span><span class="fu">build</span><span class="op">())</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">defaultToolCallbacks</span><span class="op">(</span>mcpTools<span class="op">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">.</span><span class="fu">build</span><span class="op">();</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="properties"><code>spring.ai.mcp.client.streamable-http.connections.account-service.url=http://localhost:8081
+spring.ai.mcp.client.streamable-http.connections.transaction-service.url=http://localhost:8082
+telegram.bot.token=${TELEGRAM_BOT_TOKEN:}</code></pre>
+<p>Au démarrage, le log confirme la connexion du bot :
+<code>Bot Telegram connecté : @adria_nawal_bank_bot (id 8801613049), mode long polling</code>.</p>
+<p><strong>Point en cours.</strong> Avec le modèle
+<code>openai/gpt-oss-120b</code> de Groq, l’enchaînement « appel d’outil
+puis réponse » est refusé par Groq (champ <code>reasoning_content</code>
+non accepté). L’agent répond alors par le message d’erreur prévu. La
+correction identifiée consiste à ajouter l’option
+<code>spring.ai.openai.chat.options.extra-body.include_reasoning=false</code>.</p>
+<p>Capture Telegram : captures/e-telegram.png</p>
+<div class="page-break">
+
+</div>
+<h2 id="partie-f-kafka">8. Partie F — Kafka</h2>
+<ul>
+<li>Topic <strong><code>bank.transactions.created</code></strong> (3
+partitions), créé par transaction-service.</li>
+<li>Clé du message : <strong><code>accountId</code></strong>. Tous les
+événements d’un même compte vont dans la même partition, donc dans
+l’ordre.</li>
+<li>Publication <strong>après le commit</strong>
+(<code>@TransactionalEventListener(AFTER_COMMIT)</code>) : une
+transaction refusée ou annulée ne produit aucun événement.</li>
+<li><strong>notification-service</strong> (groupe
+<code>notification-group</code>) consomme le topic et journalise une
+notification. Un message illisible est ignoré grâce à
+<code>ErrorHandlingDeserializer</code>.</li>
+</ul>
+<p>Format de l’événement :</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;eventId&quot;</span><span class="fu">:</span><span class="st">&quot;...&quot;</span><span class="fu">,</span><span class="dt">&quot;eventType&quot;</span><span class="fu">:</span><span class="st">&quot;TransactionCreated&quot;</span><span class="fu">,</span><span class="dt">&quot;transactionId&quot;</span><span class="fu">:</span><span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;accountId&quot;</span><span class="fu">:</span><span class="st">&quot;&lt;id du compte&gt;&quot;</span><span class="fu">,</span><span class="dt">&quot;amount&quot;</span><span class="fu">:</span><span class="dv">75</span><span class="fu">,</span><span class="dt">&quot;currency&quot;</span><span class="fu">:</span><span class="st">&quot;EUR&quot;</span><span class="fu">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;occurredAt&quot;</span><span class="fu">:</span><span class="st">&quot;2026-10-30T11:11:08.282885800Z&quot;</span><span class="fu">}</span></span></code></pre></div>
+<figure>
+<img src="../captures/f1-kafka-topic.png" alt="Kafka" />
+<figcaption aria-hidden="true">Kafka</figcaption>
+</figure>
+<p><em>Figure F1 — Messages du topic
+<code>bank.transactions.created</code>.</em> Chaque ligne affiche la
+partition, la clé (<code>accountId</code>) et l’événement JSON publié
+par transaction-service.</p>
+<div class="page-break">
+
+</div>
+<h2 id="partie-g-client-web-angular">9. Partie G — Client web
+Angular</h2>
+<p><strong>Ce qui a été fait.</strong> Une application Angular 22
+(<code>frontend/</code>), avec Angular Material et des composants
+standalone :</p>
+<ul>
+<li><code>ApiService</code> : tous les appels passent par la gateway
+;</li>
+<li>page <strong>Comptes</strong> : tableau (client, id, statut, devise,
+solde), formulaire de création, boutons Bloquer et Activer ;</li>
+<li>page <strong>Transactions</strong> : liste, formulaire de nouvelle
+transaction, formulaire de virement, et erreurs du backend affichées
+dans une snackbar ;</li>
+<li>page <strong>Assistant</strong> : chat qui appelle
+<code>POST /api/chat</code> avec un <code>conversationId</code> propre à
+la session ;</li>
+<li>barre de navigation entre les 3 pages.</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">createTransaction</span>(request<span class="op">:</span> TransactionRequest)<span class="op">:</span> Observable<span class="op">&lt;</span>Transaction<span class="op">&gt;</span> {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="at">http</span><span class="op">.</span><span class="fu">post</span><span class="op">&lt;</span>Transaction<span class="op">&gt;</span>(<span class="vs">`</span><span class="sc">${</span><span class="kw">this</span><span class="op">.</span><span class="at">baseUrl</span><span class="sc">}</span><span class="vs">/transactions`</span><span class="op">,</span> request)<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>npx ng build</code> passe sans erreur.</p>
+<figure>
+<img src="../captures/g1-angular-comptes.png" alt="Comptes" />
+<figcaption aria-hidden="true">Comptes</figcaption>
+</figure>
+<p><em>Figure G1 — Page Comptes.</em> Tableau des comptes, avec le
+statut BLOCKED en rouge, le formulaire de création et les boutons
+Bloquer et Activer, qui appellent
+<code>PUT /api/accounts/{id}/block</code> et <code>/activate</code>.</p>
+<figure>
+<img src="../captures/g2-angular-transactions.png" alt="Transactions" />
+<figcaption aria-hidden="true">Transactions</figcaption>
+</figure>
+<p><em>Figure G2 — Page Transactions.</em> Formulaires de paiement et de
+virement, et historique des transactions. Les erreurs <code>4xx</code>
+et <code>5xx</code> du backend s’affichent dans une snackbar.</p>
+<figure>
+<img src="../captures/g3-angular-assistant.png" alt="Assistant" />
+<figcaption aria-hidden="true">Assistant</figcaption>
+</figure>
+<p><em>Figure G3 — Page Assistant.</em> Chat relié à
+<code>POST /api/chat</code>, avec un <code>conversationId</code> par
+session et un bouton « Nouvelle conversation ».</p>
+<div class="page-break">
+
+</div>
+<h2 id="conclusion">10. Conclusion</h2>
+<p><strong>Bilan.</strong></p>
+<ul>
+<li><strong>A</strong> : dépôt et projet Maven multi-modules en
+place.</li>
+<li><strong>B</strong> : diagramme de classes et architecture.</li>
+<li><strong>C</strong> : deux services métier en couches, exposés en
+REST, GraphQL et MCP, avec règles métier, Feign et Resilience4J.</li>
+<li><strong>D</strong> : gateway, Eureka et configuration
+centralisée.</li>
+<li><strong>E</strong> : agent Spring AI avec client MCP, mémoire de
+conversation et bot Telegram.</li>
+<li><strong>F</strong> : événements Kafka avec producteur et
+consommateur.</li>
+<li><strong>G</strong> : client Angular avec trois pages.</li>
+</ul>
+<p><strong>Compétences mobilisées.</strong> Architecture micro-services
+Spring Cloud, conception en couches, résilience (circuit breaker, retry,
+fallback), messagerie événementielle, intégration d’un LLM et du
+protocole MCP, développement front Angular.</p>
+<p><strong>Difficultés.</strong></p>
+<ul>
+<li>Le temps limité de 3 heures a imposé de prioriser.</li>
+<li>Le démarrage de Kafka (Docker, listeners interne et externe) a
+demandé de la configuration.</li>
+<li>L’intégration du LLM et du MCP a posé des problèmes de compatibilité
+entre le fournisseur (Groq) et Spring AI.</li>
+<li>Sur le poste, des ports étaient déjà occupés par d’autres
+logiciels.</li>
+</ul>
+<p><strong>Perspectives.</strong></p>
+<ul>
+<li>Sécurisation avec <strong>Keycloak</strong> (OAuth2 et JWT sur la
+gateway).</li>
+<li>Partie <strong>H</strong> : service de détection de fraude en
+Python, consommateur des événements Kafka.</li>
+<li>Partie <strong>I</strong> : conteneurisation Docker de tous les
+services et pipeline CI/CD.</li>
+<li>Tests d’intégration (Testcontainers pour Kafka, tests des
+contrôleurs et du circuit breaker).</li>
+</ul>
+</body>
+</html>

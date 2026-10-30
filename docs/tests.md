@@ -228,3 +228,69 @@ MSYS_NO_PATHCONV=1 docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
 
 L'événement est envoyé **après le commit** : une transaction refusée (règle métier, 4xx) ne produit aucun message.
 Les messages sont aussi visibles dans Kafka UI : http://localhost:8090 → Topics → `bank.transactions.created`.
+
+---
+
+## 12. Agent IA : API /api/chat
+
+Prérequis : `discovery-service`, `config-service`, `account-service`, `transaction-service`, puis `ai-agent-service` (8084).
+Variables d'environnement (voir `.env.example`, ne jamais les écrire dans un fichier) :
+
+| Variable | Rôle |
+|---|---|
+| `GROQ_API_KEY` | clé du LLM (API compatible OpenAI, modèle `openai/gpt-oss-120b` par défaut, modifiable avec `LLM_MODEL`) |
+| `TELEGRAM_BOT_TOKEN` | token du bot donné par @BotFather ; **sans lui, le bot n'est pas démarré** |
+| `TELEGRAM_BOT_USERNAME` | nom du bot (vérifié au démarrage) |
+
+```bash
+C=http://localhost:8084/api/chat
+curl -s -X POST $C -H "Content-Type: application/json" \
+  -d '{"conversationId":"test-1","message":"Liste les comptes"}'
+curl -s -X POST $C -H "Content-Type: application/json" \
+  -d '{"conversationId":"test-1","message":"Quel est le solde du premier ?"}'
+```
+
+**Attendu :** `200` avec `{"conversationId":"test-1","answer":"..."}` ; la deuxième réponse s'appuie sur la première (mémoire par `conversationId`).
+
+Message vide : `{"conversationId":"test-1","message":""}` → `400` - `Données invalides`.
+
+## 13. Bot Telegram (long polling)
+
+Le bot utilise le **long polling** (`getUpdates`) : aucun webhook ni URL publique, il fonctionne en local.
+Au démarrage, il supprime un éventuel webhook puis le log de **ai-agent-service** affiche :
+
+```
+Bot Telegram connecté : @<TELEGRAM_BOT_USERNAME> (id <id>), mode long polling
+```
+
+Chaque message texte passe par le même `AgentService` que `/api/chat`, avec le **chatId Telegram comme conversationId** :
+chaque utilisateur a sa propre mémoire de conversation.
+
+Ouvrir `https://t.me/<TELEGRAM_BOT_USERNAME>` dans Telegram, puis :
+
+| # | Message envoyé | Attendu |
+|---|---|---|
+| 13.1 | `/start` | message d'accueil listant ce que sait faire l'assistant (comptes, solde, création, blocage, paiement, historique, virement) et des exemples |
+| 13.2 | `Liste les comptes` | les 3 comptes créés au démarrage (référence, devise, solde, statut) ; log `Message Telegram reçu (chat <chatId>)` |
+| 13.3 | `Quel est le solde du compte de CUST-001 ?` | solde exact du compte, identique à `curl $A/<id>` |
+| 13.4 | `Et ses transactions ?` | historique du **même** compte : la mémoire garde le contexte du message précédent |
+| 13.5 | `Fais un paiement de 20 EUR au restaurant en France sur ce compte` | transaction créée ; le solde baisse de 20 (vérifier avec `curl $A/$EUR`) |
+| 13.6 | `Fais un paiement de 5000 EUR sur ce compte` | refus expliqué (montant supérieur au maximum de 1000) |
+| 13.7 | une photo ou un autocollant | `Je ne comprends que les messages texte...` |
+| 13.8 | depuis un **autre** compte Telegram : `Et ses transactions ?` | l'agent ne connaît pas le contexte de l'autre utilisateur (mémoire séparée par chatId) |
+| 13.9 | `Liste toutes les transactions de tous les comptes, avec tous les détails` (après plusieurs paiements) ou une demande de texte très long | si la réponse dépasse 4000 caractères, elle arrive en **plusieurs messages** successifs |
+
+### Cas d'erreur
+
+| # | Situation | Attendu |
+|---|---|---|
+| 13.10 | arrêter `transaction-service`, puis `Montre les transactions du compte de CUST-001` | le bot répond quand même : l'outil est en erreur, l'agent explique que le service est indisponible, ou le bot répond `Désolé, je ne peux pas répondre pour le moment : l'assistant est momentanément indisponible (modèle IA ou service bancaire injoignable)...` |
+| 13.11 | démarrer ai-agent-service avec une `GROQ_API_KEY` invalide, puis envoyer `Bonjour` | `Désolé, je ne peux pas répondre pour le moment : ...` au lieu d'un silence ; log `Échec de l'agent (conversation <chatId>)` |
+| 13.12 | démarrer ai-agent-service **sans** `TELEGRAM_BOT_TOKEN` | le service démarre normalement, `/api/chat` fonctionne, aucun log `Bot Telegram` (bot désactivé) |
+| 13.13 | couper Internet quelques secondes | log `Erreur de long polling Telegram, nouvel essai dans 5 s` (token masqué `***`), puis reprise automatique |
+
+Le découpage des longues réponses est aussi couvert par le test unitaire `MessageSplitterTest` :
+
+```bash
+./mvnw -pl ai-agent-service test
+```

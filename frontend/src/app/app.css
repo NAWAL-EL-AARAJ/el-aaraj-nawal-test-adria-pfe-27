@@ -1,0 +1,14 @@
+.brand {
+  margin-right: 24px;
+  font-weight: 600;
+}
+
+.active {
+  text-decoration: underline;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}

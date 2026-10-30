@@ -1,0 +1,79 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+mat-card {
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.grow {
+  flex: 1;
+  min-width: 240px;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.blocked {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.message {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #d7e3ff;
+}
+
+.message.assistant {
+  align-self: flex-start;
+  background: #eeeeee;
+}
+
+.message.error {
+  align-self: flex-start;
+  background: #ffdad6;
+  color: #410002;
+}

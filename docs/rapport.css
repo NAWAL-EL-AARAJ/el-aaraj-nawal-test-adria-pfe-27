@@ -1,0 +1,19 @@
+@page { size: A4; margin: 18mm 16mm 20mm 16mm;
+  @bottom-center { content: "Nawal EL AARAJ"; font: 9pt Segoe UI, sans-serif; color: #666; }
+  @bottom-right { content: counter(page); font: 9pt Segoe UI, sans-serif; color: #666; } }
+@page :first { @bottom-center { content: none; } @bottom-right { content: none; } }
+body { font: 11pt/1.5 "Segoe UI", Calibri, sans-serif; color: #222; max-width: none; margin: 0; }
+h2 { color: #0b3d91; border-bottom: 2px solid #0b3d91; padding-bottom: 4px; }
+.title-page { height: 245mm; display: flex; flex-direction: column; justify-content: center; text-align: center; font-size: 13pt; }
+.title-page p { margin: 6px 0; }
+.title-page .big { font-size: 26pt; font-weight: 700; color: #0b3d91; margin: 36px 0 8px; }
+.title-page .sub { font-size: 17pt; margin-bottom: 36px; }
+.page-break { page-break-after: always; }
+img { max-width: 100%; display: block; margin: 10px auto 4px; border: 1px solid #ccc; page-break-inside: avoid; }
+p:has(> img) + p em, em { color: #444; }
+pre { background: #f4f6f8; border: 1px solid #ddd; padding: 8px; font-size: 8.5pt; white-space: pre-wrap; word-break: break-all; page-break-inside: avoid; }
+code { font-family: Consolas, monospace; font-size: 9pt; }
+table { border-collapse: collapse; width: 100%; font-size: 10pt; margin: 8px 0; }
+th, td { border: 1px solid #bbb; padding: 4px 8px; text-align: left; }
+th { background: #e8eef8; }
+blockquote { border-left: 4px solid #e0a800; background: #fff8e1; margin: 8px 0; padding: 6px 12px; }
