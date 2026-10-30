@@ -1,0 +1,198 @@
+@startuml class-diagram
+!pragma layout smetana
+title Diagramme de classes - Banque (account-service / transaction-service)
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+left to right direction
+
+package "account-service" {
+  package "domain" as ad {
+    enum AccountStatus {
+      ACTIVE
+      BLOCKED
+    }
+    class Account <<Entity>> {
+      - id : UUID
+      - customerReference : String
+      - status : AccountStatus
+      - currency : String
+      - balance : double
+    }
+  }
+  package "dto" as adto {
+    class AccountRequestDTO <<record>> {
+      customerReference : String
+      currency : String
+      initialBalance : double
+    }
+    class AccountResponseDTO <<record>> {
+      id : UUID
+      customerReference : String
+      status : AccountStatus
+      currency : String
+      balance : double
+    }
+  }
+  package "repository" as arepo {
+    interface AccountRepository <<JpaRepository<Account, UUID>>> {
+      + findByCustomerReference(ref : String) : List<Account>
+      + findByStatus(status : AccountStatus) : List<Account>
+    }
+  }
+  package "service" as aserv {
+    interface AccountService {
+      + create(req : AccountRequestDTO) : AccountResponseDTO
+      + findById(id : UUID) : AccountResponseDTO
+      + findAll() : List<AccountResponseDTO>
+      + block(id : UUID) : AccountResponseDTO
+      + activate(id : UUID) : AccountResponseDTO
+      + debit(id : UUID, amount : double) : AccountResponseDTO
+    }
+    class AccountServiceImpl
+    class AccountMapper {
+      + toDto(a : Account) : AccountResponseDTO
+      + toEntity(r : AccountRequestDTO) : Account
+    }
+  }
+  package "web" as aweb {
+    class AccountRestController <<RestController>> {
+      + /api/accounts
+    }
+    class AccountGraphQLController <<Controller>> {
+      + accounts() / accountById(id)
+      + createAccount(input)
+    }
+  }
+  package "mcp" as amcp {
+    class AccountMcpTools <<@Tool>> {
+      + getAccount(id : UUID)
+      + listAccounts()
+      + blockAccount(id : UUID)
+    }
+  }
+}
+
+package "transaction-service" {
+  package "domain" as td {
+    class Transaction <<Entity>> {
+      - id : UUID
+      - accountId : UUID
+      - amount : BigDecimal
+      - currency : String
+      - merchantCategory : String
+      - country : String
+      - createdAt : Instant
+    }
+  }
+  package "dto" as tdto {
+    class TransactionRequestDTO <<record>> {
+      accountId : UUID
+      amount : BigDecimal
+      currency : String
+      merchantCategory : String
+      country : String
+    }
+    class TransactionResponseDTO <<record>> {
+      id : UUID
+      accountId : UUID
+      amount : BigDecimal
+      currency : String
+      merchantCategory : String
+      country : String
+      createdAt : Instant
+    }
+    class AccountDTO <<record>> {
+      id : UUID
+      customerReference : String
+      status : String
+      currency : String
+      balance : double
+    }
+  }
+  package "events" as tevt {
+    class TransactionCreatedEvent <<record>> {
+      transactionId : UUID
+      accountId : UUID
+      amount : BigDecimal
+      currency : String
+      merchantCategory : String
+      country : String
+      createdAt : Instant
+    }
+  }
+  package "repository" as trepo {
+    interface TransactionRepository <<JpaRepository<Transaction, UUID>>> {
+      + findByAccountId(accountId : UUID) : List<Transaction>
+    }
+  }
+  package "client" as tcli {
+    interface AccountRestClient <<FeignClient("account-service")>> {
+      + getAccount(id : UUID) : AccountDTO
+    }
+  }
+  package "service" as tserv {
+    interface TransactionService {
+      + create(req : TransactionRequestDTO) : TransactionResponseDTO
+      + findById(id : UUID) : TransactionResponseDTO
+      + findByAccount(accountId : UUID) : List<TransactionResponseDTO>
+    }
+    class TransactionServiceImpl {
+      - getAccountFallback(id, ex) : AccountDTO
+    }
+    class TransactionMapper
+  }
+  package "web" as tweb {
+    class TransactionRestController <<RestController>> {
+      + /api/transactions
+    }
+    class TransactionGraphQLController <<Controller>> {
+      + transactions() / transactionById(id)
+      + createTransaction(input)
+    }
+  }
+  package "mcp" as tmcp {
+    class TransactionMcpTools <<@Tool>> {
+      + createTransaction(...)
+      + listTransactionsByAccount(accountId)
+    }
+  }
+}
+
+package "notification-service" {
+  class TransactionEventListener <<KafkaListener>> {
+    + onTransactionCreated(e : TransactionCreatedEvent)
+  }
+}
+
+' --- account-service ---
+Account "1" --> "1" AccountStatus : status
+AccountRepository ..> Account : gère
+AccountServiceImpl ..|> AccountService
+AccountServiceImpl --> AccountRepository
+AccountServiceImpl --> AccountMapper
+AccountMapper ..> AccountRequestDTO
+AccountMapper ..> AccountResponseDTO
+AccountRestController --> AccountService
+AccountGraphQLController --> AccountService
+AccountMcpTools --> AccountService
+
+' --- transaction-service ---
+Transaction "*" ..> "1" AccountDTO : accountId
+TransactionRepository ..> Transaction : gère
+TransactionServiceImpl ..|> TransactionService
+TransactionServiceImpl --> TransactionRepository
+TransactionServiceImpl --> AccountRestClient : Feign + Resilience4J
+TransactionServiceImpl --> TransactionMapper
+TransactionServiceImpl ..> TransactionCreatedEvent : publie (Kafka)
+TransactionMapper ..> TransactionRequestDTO
+TransactionMapper ..> TransactionResponseDTO
+AccountRestClient ..> AccountDTO
+TransactionRestController --> TransactionService
+TransactionGraphQLController --> TransactionService
+TransactionMcpTools --> TransactionService
+
+' --- inter-services ---
+AccountRestClient ..> AccountRestController : HTTP via Eureka
+TransactionEventListener ..> TransactionCreatedEvent : consomme
+@enduml

@@ -1,0 +1,60 @@
+@startuml architecture
+!pragma layout smetana
+title Architecture micro-services
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+actor "Utilisateur" as user
+node "Client Angular" as angular
+node "Client REST / Bot Telegram" as telegram
+
+rectangle "Infrastructure" {
+  component "gateway-service\n:8080\nSpring Cloud Gateway" as gateway
+  component "discovery-service\n:8761\nEureka Server" as eureka
+  component "config-service\n:8888\nConfig Server" as config
+  folder "config-repo" as repo
+}
+
+rectangle "Services métier" {
+  component "account-service\n:8081\nREST | GraphQL | MCP\nJPA + H2" as account
+  component "transaction-service\n:8082\nREST | GraphQL | MCP\nJPA + H2" as transaction
+  component "notification-service\n:8083\nKafka consumer" as notification
+}
+
+queue "Kafka\ntopic: bank.transactions.created" as kafka
+
+rectangle "IA" {
+  component "ai-agent-service\n:8084\nSpring AI + MCP Client" as agent
+  cloud "LLM\n(OpenAI)" as llm
+}
+
+user --> angular
+user --> telegram
+angular --> gateway : HTTP
+telegram --> gateway : HTTP
+telegram --> agent : questions en langage naturel
+
+gateway --> account : lb://account-service
+gateway --> transaction : lb://transaction-service
+
+transaction --> account : OpenFeign + Resilience4J\n(circuit breaker)
+transaction --> kafka : publie TransactionCreatedEvent
+kafka --> notification : consomme
+
+agent --> llm : prompt / tool calling
+agent --> account : MCP (outils)
+agent --> transaction : MCP (outils)
+
+config --> repo : lit
+gateway ..> eureka : enregistrement / découverte
+account ..> eureka
+transaction ..> eureka
+notification ..> eureka
+agent ..> eureka
+gateway ..> config : configuration
+account ..> config
+transaction ..> config
+notification ..> config
+agent ..> config
+@enduml
