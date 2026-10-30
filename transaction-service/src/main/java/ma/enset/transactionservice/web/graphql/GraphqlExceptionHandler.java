@@ -18,7 +18,8 @@ public class GraphqlExceptionHandler extends DataFetcherExceptionResolverAdapter
             type = ErrorType.NOT_FOUND;
         } else if (ex instanceof InsufficientBalanceException || ex instanceof AccountNotActiveException
                 || ex instanceof CurrencyMismatchException || ex instanceof InvalidAmountException
-                || ex instanceof InvalidTransferException || ex instanceof IllegalArgumentException) {
+                || ex instanceof InvalidTransferException || ex instanceof AccountOperationRejectedException
+                || ex instanceof IllegalArgumentException) {
             type = ErrorType.BAD_REQUEST;
         } else if (ex instanceof AccountServiceUnavailableException) {
             type = ErrorType.INTERNAL_ERROR;

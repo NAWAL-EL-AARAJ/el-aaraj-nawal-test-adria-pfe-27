@@ -23,7 +23,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({InsufficientBalanceException.class, AccountNotActiveException.class,
-            CurrencyMismatchException.class, InvalidAmountException.class, InvalidTransferException.class})
+            CurrencyMismatchException.class, InvalidAmountException.class, InvalidTransferException.class,
+            AccountOperationRejectedException.class})
     public ResponseEntity<ErrorResponse> handleBusinessRule(RuntimeException ex, HttpServletRequest request) {
         return build(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), request, null);
     }
