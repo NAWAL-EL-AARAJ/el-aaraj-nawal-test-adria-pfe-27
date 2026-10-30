@@ -181,3 +181,50 @@ curl -s http://localhost:8082/actuator/circuitbreakerevents
 | `GET http://localhost:8082/actuator/circuitbreakerevents` | historique des appels et des transitions |
 | `GET http://localhost:8082/actuator/retries` | configuration du retry |
 | `POST http://localhost:8082/actuator/refresh` | recharge la configuration depuis config-service |
+
+---
+
+## 11. Kafka : événement TransactionCreated
+
+Démarrer Kafka et Kafka UI (Docker Desktop doit être lancé) :
+
+```bash
+docker compose -f docker-compose-infra.yml up -d
+```
+
+Puis démarrer `notification-service` (8083) en plus des services précédents. Au démarrage, son log affiche :
+
+```
+notification-group: partitions assigned: [bank.transactions.created-0, bank.transactions.created-1, bank.transactions.created-2]
+```
+
+Créer une transaction :
+
+```bash
+curl -s -X POST $T -H "Content-Type: application/json" \
+  -d "{\"accountId\":\"$EUR\",\"amount\":75,\"currency\":\"EUR\",\"merchantCategory\":\"RESTAURANT\",\"country\":\"FR\"}"
+```
+
+**Attendu :**
+- `201 Created` ;
+- log de **transaction-service** :
+  `Événement <eventId> publié dans bank.transactions.created (clé=<EUR>, partition=0, offset=0)` ;
+- log de **notification-service** :
+  `Événement reçu : TransactionCreatedEvent[...] | clé=<EUR> | partition=0 | offset=0`
+  `Notification : transaction <transactionId> de 75 EUR sur le compte <EUR>`.
+
+Message JSON dans le topic (clé = `accountId`) :
+
+```bash
+MSYS_NO_PATHCONV=1 docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 --topic bank.transactions.created \
+  --from-beginning --property print.key=true --timeout-ms 5000
+```
+
+```json
+{"eventId":"...","eventType":"TransactionCreated","transactionId":"...","accountId":"<EUR>",
+ "amount":75,"currency":"EUR","occurredAt":"2026-10-30T11:11:08.282885800Z"}
+```
+
+L'événement est envoyé **après le commit** : une transaction refusée (règle métier, 4xx) ne produit aucun message.
+Les messages sont aussi visibles dans Kafka UI : http://localhost:8090 → Topics → `bank.transactions.created`.

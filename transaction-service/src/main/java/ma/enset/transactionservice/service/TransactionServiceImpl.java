@@ -7,8 +7,10 @@ import ma.enset.transactionservice.domain.Transaction;
 import ma.enset.transactionservice.domain.TransactionType;
 import ma.enset.transactionservice.repository.TransactionRepository;
 import ma.enset.transactionservice.service.dto.*;
+import ma.enset.transactionservice.service.event.TransactionCreatedEvent;
 import ma.enset.transactionservice.service.exception.*;
 import ma.enset.transactionservice.service.mapper.TransactionMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionMapper transactionMapper;
     private final AccountGateway accountGateway;
     private final BankTransactionProperties properties;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public TransactionResponseDTO create(TransactionRequestDTO request) {
@@ -46,6 +49,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .build());
 
         accountGateway.debit(account.id(), request.amount());
+        // envoyé dans Kafka par TransactionEventPublisher, seulement après le commit
+        eventPublisher.publishEvent(TransactionCreatedEvent.from(saved));
         return transactionMapper.toDto(saved);
     }
 
@@ -98,6 +103,8 @@ public class TransactionServiceImpl implements TransactionService {
             accountGateway.credit(source.id(), request.amount());
             throw ex;
         }
+        eventPublisher.publishEvent(TransactionCreatedEvent.from(debit));
+        eventPublisher.publishEvent(TransactionCreatedEvent.from(credit));
         return new TransferResponseDTO(transactionMapper.toDto(debit), transactionMapper.toDto(credit));
     }
 

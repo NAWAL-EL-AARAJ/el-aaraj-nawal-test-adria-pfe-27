@@ -15,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import ma.enset.transactionservice.service.event.TransactionCreatedEvent;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +37,9 @@ class TransactionServiceImplTest {
     @Mock
     private AccountGateway accountGateway;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private BankTransactionProperties properties;
     private TransactionServiceImpl service;
 
@@ -52,7 +57,8 @@ class TransactionServiceImplTest {
     void setUp() {
         properties = new BankTransactionProperties();
         properties.setMaxAmount(new BigDecimal("1000"));
-        service = new TransactionServiceImpl(transactionRepository, new TransactionMapper(), accountGateway, properties);
+        service = new TransactionServiceImpl(transactionRepository, new TransactionMapper(), accountGateway, properties,
+                eventPublisher);
     }
 
     private void saveReturnsArgument() {
@@ -84,6 +90,33 @@ class TransactionServiceImplTest {
             InOrder order = inOrder(transactionRepository, accountGateway);
             order.verify(transactionRepository).save(any(Transaction.class));
             order.verify(accountGateway).debit(eurId, new BigDecimal("120.50"));
+        }
+
+        @Test
+        void transactionValide_publieUnTransactionCreatedEvent() {
+            when(accountGateway.getAccount(eurId)).thenReturn(eur);
+            saveReturnsArgument();
+
+            TransactionResponseDTO result = service.create(payment(eurId, "42", "EUR"));
+
+            ArgumentCaptor<TransactionCreatedEvent> captor = ArgumentCaptor.forClass(TransactionCreatedEvent.class);
+            verify(eventPublisher).publishEvent(captor.capture());
+            TransactionCreatedEvent event = captor.getValue();
+            assertThat(event.eventId()).isNotNull();
+            assertThat(event.eventType()).isEqualTo("TransactionCreated");
+            assertThat(event.transactionId()).isEqualTo(result.id());
+            assertThat(event.accountId()).isEqualTo(eurId);
+            assertThat(event.amount()).isEqualByComparingTo("42");
+            assertThat(event.currency()).isEqualTo("EUR");
+        }
+
+        @Test
+        void transactionRefusee_nePublieAucunEvenement() {
+            when(accountGateway.getAccount(eurId)).thenReturn(eur);
+
+            assertThatThrownBy(() -> service.create(payment(eurId, "900", "EUR")))
+                    .isInstanceOf(InsufficientBalanceException.class);
+            verifyNoInteractions(eventPublisher);
         }
 
         @Test
@@ -199,6 +232,7 @@ class TransactionServiceImplTest {
             verify(accountGateway).credit(eur2Id, new BigDecimal("200"));
             assertThat(result.debit().merchantCategory()).isEqualTo("TRANSFER");
             assertThat(result.credit().accountId()).isEqualTo(eur2Id);
+            verify(eventPublisher, times(2)).publishEvent(any(TransactionCreatedEvent.class));
         }
 
         @Test
